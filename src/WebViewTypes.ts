@@ -113,6 +113,9 @@ export interface WebViewHttpError extends WebViewNativeEvent {
   description: string;
   statusCode: number;
 }
+export interface WebViewSSLError extends WebViewNativeEvent {
+  domain: string;
+}
 
 export type WebViewEvent = NativeSyntheticEvent<WebViewNativeEvent>;
 
@@ -130,6 +133,7 @@ export type WebViewTerminatedEvent = NativeSyntheticEvent<WebViewNativeEvent>;
 
 export type WebViewHttpErrorEvent = NativeSyntheticEvent<WebViewHttpError>;
 
+export declare type WebViewSSLErrorEvent = NativeSyntheticEvent<WebViewSSLError>;
 export type DataDetectorTypes =
   | 'phoneNumber'
   | 'link'
@@ -456,7 +460,7 @@ export interface IOSWebViewProps extends WebViewSharedProps {
 export interface AndroidWebViewProps extends WebViewSharedProps {
   onNavigationStateChange?: (event: WebViewNavigation) => void;
   onContentSizeChange?: (event: WebViewEvent) => void;
-
+  onSSLError?: (event: WebViewSSLErrorEvent) => void;
   /**
    * https://developer.android.com/reference/android/view/View#OVER_SCROLL_NEVER
    * Sets the overScrollMode. Possible values are:
@@ -561,6 +565,14 @@ export interface AndroidWebViewProps extends WebViewSharedProps {
    * Sets ability to open fullscreen videos on Android devices.
    */
   allowsFullscreenVideo?: boolean;
+  /**
+     * Turn on check SSL. Default is false.
+     */
+  isCheckPassSSL?: boolean;
+  /**
+   * White List SSL. Default is null
+   */
+  whiteListSSL?: string[];
 }
 
 export interface WebViewSharedProps extends ViewProps {

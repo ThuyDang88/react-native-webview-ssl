@@ -11,11 +11,13 @@ import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.Manifest;
 import android.net.Uri;
+import android.net.http.SslError;
 import android.os.Build;
 import android.os.Environment;
 import androidx.annotation.RequiresApi;
 import androidx.core.content.ContextCompat;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,6 +29,7 @@ import android.webkit.DownloadListener;
 import android.webkit.GeolocationPermissions;
 import android.webkit.JavascriptInterface;
 import android.webkit.PermissionRequest;
+import android.webkit.SslErrorHandler;
 import android.webkit.URLUtil;
 import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
@@ -63,6 +66,7 @@ import com.reactnativecommunity.webview.events.TopLoadingFinishEvent;
 import com.reactnativecommunity.webview.events.TopLoadingProgressEvent;
 import com.reactnativecommunity.webview.events.TopLoadingStartEvent;
 import com.reactnativecommunity.webview.events.TopMessageEvent;
+import com.reactnativecommunity.webview.events.TopSSLErrorEvent;
 import com.reactnativecommunity.webview.events.TopShouldStartLoadWithRequestEvent;
 
 import org.json.JSONException;
@@ -129,6 +133,8 @@ public class RNCWebViewManager extends SimpleViewManager<WebView> {
   protected boolean mAllowsFullscreenVideo = false;
   protected @Nullable String mUserAgent = null;
   protected @Nullable String mUserAgentWithApplicationName = null;
+  protected @Nullable boolean isCheckPassSSL;
+  protected @Nullable ReadableArray whiteListSSL = null;
 
   public RNCWebViewManager() {
     mWebViewConfig = new WebViewConfig() {
@@ -502,10 +508,30 @@ public class RNCWebViewManager extends SimpleViewManager<WebView> {
     ((RNCWebView) view).setHasScrollEvent(hasScrollEvent);
   }
 
+  @ReactProp(name = "isCheckPassSSL")
+  public void setIsCheckPassSSL(WebView view, boolean isCheckPassSSL) {
+    Log.e("SmartPay", "RNCWebViewManager::setIsCheckPassSSL " + isCheckPassSSL);
+    this.isCheckPassSSL = isCheckPassSSL;
+    RNCWebViewClient rncWebViewClient = ((RNCWebView) view).getRNCWebViewClient();
+    if (rncWebViewClient != null) {
+      rncWebViewClient.isCheckPassSSL = isCheckPassSSL;
+    }
+  }
+
+  @ReactProp(name = "whiteListSSL")
+  public void setWhiteListSSL(WebView view, ReadableArray whiteListSSL) {
+    Log.e("SmartPay", "RNCWebViewManager::setWhiteListSSL " + whiteListSSL);
+    this.whiteListSSL = whiteListSSL;
+    RNCWebViewClient rncWebViewClient = ((RNCWebView) view).getRNCWebViewClient();
+    if (rncWebViewClient != null) {
+      rncWebViewClient.whiteListSSL = whiteListSSL;
+    }
+  }
+
   @Override
   protected void addEventEmitters(ThemedReactContext reactContext, WebView view) {
     // Do not register default touch emitter and let WebView implementation handle touches
-    view.setWebViewClient(new RNCWebViewClient());
+    view.setWebViewClient(new RNCWebViewClient(isCheckPassSSL, whiteListSSL));
   }
 
   @Override
@@ -518,6 +544,7 @@ public class RNCWebViewManager extends SimpleViewManager<WebView> {
     export.put(TopShouldStartLoadWithRequestEvent.EVENT_NAME, MapBuilder.of("registrationName", "onShouldStartLoadWithRequest"));
     export.put(ScrollEventType.getJSEventName(ScrollEventType.SCROLL), MapBuilder.of("registrationName", "onScroll"));
     export.put(TopHttpErrorEvent.EVENT_NAME, MapBuilder.of("registrationName", "onHttpError"));
+    export.put(TopSSLErrorEvent.EVENT_NAME, MapBuilder.of("registrationName", "onSSLError"));
     return export;
   }
 
@@ -665,6 +692,13 @@ public class RNCWebViewManager extends SimpleViewManager<WebView> {
     protected boolean mLastLoadFailed = false;
     protected @Nullable
     ReadableArray mUrlPrefixesForDefaultIntent;
+    boolean isCheckPassSSL;
+    ReadableArray whiteListSSL;
+
+    public RNCWebViewClient(boolean isCheckPassSSL, ReadableArray whiteListSSL){
+      this.isCheckPassSSL = isCheckPassSSL;
+      this.whiteListSSL = whiteListSSL;
+    }
 
     @Override
     public void onPageFinished(WebView webView, String url) {
@@ -749,6 +783,44 @@ public class RNCWebViewManager extends SimpleViewManager<WebView> {
           webView,
           new TopHttpErrorEvent(webView.getId(), eventData));
       }
+    }
+
+ @Override
+    public void onReceivedSslError(WebView webView, SslErrorHandler handler, SslError error) {
+      Log.e("SmartPay", "RNWebViwManager::onReceivedSslError isCheckPassSSL: " + isCheckPassSSL + ", whiteListSSL: " + whiteListSSL + ", errorUrl: " + error.getUrl());
+      try {
+        if (isCheckPassSSL){
+          URL url = new URL(error.getUrl());
+          String domain = url.getHost();
+          Log.e("SmartPay", "RNWebViwManager::onReceivedSslError domain: " + domain);
+          if(isContainSSL(domain)) {
+            handler.proceed();
+          }else {
+            WritableMap eventData = createWebViewEvent(webView, error.getUrl());
+            eventData.putString("domain", domain);
+            dispatchEvent(
+              webView,
+              new TopSSLErrorEvent(webView.getId(), eventData));
+            handler.cancel();
+          }
+        }else {
+          handler.cancel();
+        }
+      } catch (Exception e) {
+        Log.e("SmartPay", "RNWebViwManager::onReceivedSslError Exception: " + error.getUrl());
+        handler.cancel();
+      }
+    }
+
+    private boolean isContainSSL(String url){
+      if(whiteListSSL != null){
+        for(Object whiteUrl : whiteListSSL.toArrayList()){
+          if(url.equalsIgnoreCase((String)whiteUrl)){
+            return true;
+          }
+        }
+      }
+      return false;
     }
 
     protected void emitFinishEvent(WebView webView, String url) {
