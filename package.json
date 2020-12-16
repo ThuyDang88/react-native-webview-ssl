@@ -10,14 +10,6 @@
   "license": "MIT",
   "version": "7.6.0",
   "homepage": "https://github.com/react-native-community/react-native-webview#readme",
-  "scripts": {
-      "build": "yarn tsc",
-      "ci": "CI=true && yarn lint && yarn test",
-      "ci:publish": "yarn semantic-release",
-      "lint": "yarn tsc --noEmit && yarn eslint ./src --ext .ts,.tsx",
-      "prepare": "yarn build",
-      "test": "yarn jest"
-  },
   "rn-docs": {
     "title": "Webview",
     "type": "Component"
