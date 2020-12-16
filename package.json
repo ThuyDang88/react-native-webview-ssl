@@ -1,35 +1,50 @@
 {
-  "name": "react-native-webview",
-  "description": "React Native WebView component for iOS, Android, and Windows 10 (coming soon)",
-  "main": "index.js",
-  "typings": "index.d.ts",
-  "author": "Jamon Holmgren <jamon@infinite.red>",
-  "contributors": [
-    "Thibault Malbranche <malbranche.thibault@gmail.com>"
+  "_args": [
+    [
+      "react-native-webview@7.6.0",
+      "/Users/thuydang/Documents/SmartPay"
+    ]
   ],
-  "license": "MIT",
-  "version": "7.6.0",
-  "homepage": "https://github.com/react-native-community/react-native-webview#readme",
-  "scripts": {
-    "build": "yarn tsc",
-    "ci": "CI=true && yarn lint && yarn test",
-    "ci:publish": "yarn semantic-release",
-    "lint": "yarn tsc --noEmit && yarn eslint ./src --ext .ts,.tsx",
-    "prepare": "yarn build",
-    "test": "yarn jest"
+  "_from": "react-native-webview@7.6.0",
+  "_id": "react-native-webview@7.6.0",
+  "_inBundle": false,
+  "_integrity": "sha512-IQWtIpCTYb4dTshAJO3hMM9Ms5T6KRpk6qWqgBTGMdmgeEvSxWz9l7Og1ALhb7T7NoAnPy8w/dQmD9LlbGGs5g==",
+  "_location": "/react-native-webview",
+  "_phantomChildren": {},
+  "_requested": {
+    "type": "version",
+    "registry": true,
+    "raw": "react-native-webview@7.6.0",
+    "name": "react-native-webview",
+    "escapedName": "react-native-webview",
+    "rawSpec": "7.6.0",
+    "saveSpec": null,
+    "fetchSpec": "7.6.0"
   },
-  "rn-docs": {
-    "title": "Webview",
-    "type": "Component"
+  "_requiredBy": [
+    "/"
+  ],
+  "_resolved": "https://registry.npmjs.org/react-native-webview/-/react-native-webview-7.6.0.tgz",
+  "_spec": "7.6.0",
+  "_where": "/Users/thuydang/Documents/SmartPay",
+  "author": {
+    "name": "Jamon Holmgren",
+    "email": "jamon@infinite.red"
   },
-  "peerDependencies": {
-    "react": "^16.0",
-    "react-native": ">=0.60 <0.62"
+  "bugs": {
+    "url": "https://github.com/react-native-community/react-native-webview/issues"
   },
+  "contributors": [
+    {
+      "name": "Thibault Malbranche",
+      "email": "malbranche.thibault@gmail.com"
+    }
+  ],
   "dependencies": {
     "escape-string-regexp": "2.0.0",
     "invariant": "2.2.4"
   },
+  "description": "React Native WebView component for iOS, Android, and Windows 10 (coming soon)",
   "devDependencies": {
     "@babel/core": "7.5.5",
     "@semantic-release/git": "7.0.16",
@@ -55,10 +70,6 @@
     "semantic-release": "15.13.24",
     "typescript": "3.6.2"
   },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/react-native-community/react-native-webview.git"
-  },
   "files": [
     "android",
     "ios",
@@ -66,5 +77,31 @@
     "index.js",
     "index.d.ts",
     "react-native-webview.podspec"
-  ]
+  ],
+  "homepage": "https://github.com/react-native-community/react-native-webview#readme",
+  "license": "MIT",
+  "main": "index.js",
+  "name": "react-native-webview",
+  "peerDependencies": {
+    "react": "^16.0",
+    "react-native": ">=0.60 <0.62"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/react-native-community/react-native-webview.git"
+  },
+  "rn-docs": {
+    "title": "Webview",
+    "type": "Component"
+  },
+  "scripts": {
+    "build": "yarn tsc",
+    "ci": "CI=true && yarn lint && yarn test",
+    "ci:publish": "yarn semantic-release",
+    "lint": "yarn tsc --noEmit && yarn eslint ./src --ext .ts,.tsx",
+    "prepare": "yarn build",
+    "test": "yarn jest"
+  },
+  "typings": "index.d.ts",
+  "version": "7.6.0"
 }
