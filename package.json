@@ -52,7 +52,7 @@
     "metro-react-native-babel-preset": "0.53.1",
     "react": "16.8.3",
     "react-native": "0.60.5",
-    "semantic-release": "15.13.24",
+    "semantic-release": "17.2.3",
     "typescript": "^3.9.7"
   },
   "repository": {
